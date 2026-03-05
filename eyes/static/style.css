@@ -1,0 +1,155 @@
+nav,h1{
+  text-align:center;
+}
+shopdiv{
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  background: #f8f8f8;
+}
+
+.shop-container {
+  display: flex;
+  gap: 30px;
+  padding: 20px;
+}
+
+.gallery {
+  flex: 3;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+}
+
+.shop-layout {
+  display: flex;
+  gap: 30px;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+.product-card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+.product-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.product-info {
+  padding: 10px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.product-info h3 {
+  margin: 0 0 5px;
+  font-size: 1.1em;
+}
+
+.product-info p {
+  margin: 0 0 10px;
+  color: #555;
+}
+
+.product-info button {
+  padding: 8px 12px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.product-info button:hover {
+  background: #218838;
+}
+
+.status-line {
+  width: 100%;
+  padding: 10px 16px;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+/* warning message */
+.status-line.warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+}
+
+/* error message */
+.status-line.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* success message */
+.status-line.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+/* preview section */
+.preview{
+  flex: 1;
+  min-width: 250px;
+  max-width: 300px;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  position: sticky;
+  top: 20px;
+}
+
+/* hidden initially */
+.hidden {
+  display: none;
+}
+.preview-img {
+  width: 100%;
+  max-height: 250px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.preview-name {
+  margin: 10px 0;
+}
+
+.preview-price {
+  font-weight: bold;
+  margin-bottom: 10px;
+}

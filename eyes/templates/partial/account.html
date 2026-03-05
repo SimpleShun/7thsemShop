@@ -1,0 +1,7 @@
+<div>
+
+  UserName = {{ g.user['username']}}<br>
+  <button hx-get="/auth/logout" hx-target="#output" hx-swap="innerHTML">
+    LOGOUT
+  </button>
+</div>

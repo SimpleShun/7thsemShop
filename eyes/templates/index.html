@@ -1,0 +1,23 @@
+<!doctype html>
+<title> {% block title %} {% endblock %} SimpleShun's Art Shop </title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="{{url_for('static',filename = "htmx.min.js")}}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+
+<header>
+<h1>SimpleShun's Art Shop</h1>
+<nav>
+   <a hx-trigger="click" id="shop" hx-get="shop" hx-target="#output" hx-swap="innerHTML">Shop</a>
+   {% if g.user %}
+   <a hx-trigger="click" id="account" hx-get="navButton" hx-target="#output" hx-swap="innerHTML">Account({{ g.user['username'] }})</a>
+   {% else %}
+      <a hx-trigger="click" id="register" hx-get="navButton" hx-target="#output" hx-swap="innerHTML">Register/Login</a>
+   {% endif %}
+   <a hx-trigger="click" id="cart" hx-get="cart" hx-target="#output" hx-swap="innerHTML">Cart</a>
+</nav>
+</header>
+<div id="output" align="center">
+   <h1> Welcome </h1>
+   <h2> Project By Rahul Gurung</h2>
+</div>

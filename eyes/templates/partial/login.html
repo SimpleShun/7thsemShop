@@ -1,0 +1,18 @@
+{% block header %}
+  <h1>{% block title %}Log In{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <div align="center">
+  <form method="post" action="/auth/login">
+    <label for="username">Username</label>
+    <input name="username" id="username" required>
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password" required> <br>
+    <input type="submit" value="Log In">
+  </form>
+  </div>
+{% endblock %}
+<div align="center">
+<span align="center" class="button" id="register" hx-get="/navButton"  hx-target="#output" hx-swap="innerHTML">Register Instead</span>
+</div>

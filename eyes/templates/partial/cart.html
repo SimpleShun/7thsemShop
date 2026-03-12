@@ -1,0 +1,79 @@
+<div class="cart-container" id="cart">
+  <h2>Your Cart</h2>
+
+  {% if cart_items %}
+  <table class="cart-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Price</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in cart_items %}
+      <tr>
+        <td>{{ item.name }}</td>
+        <td>Rs {{ item.price }}</td>
+        <td>
+          <form action="/remove-from-cart" method="POST">
+            <input type="hidden" name="item_id" value="{{ item.name }}">
+            <button type="submit" class="remove-btn">Remove</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <button hx-get="/cart" hx-target="#output" hx-swap="innerHTML"> update </button>
+  <div class="cart-total">
+    <strong>Total: Rs {{ total }}</strong>
+  </div>
+
+  <form action="/checkout" method="POST">
+    <button type="submit" class="checkout-btn">Checkout</button>
+  </form>
+
+  {% else %}
+  <p>Your cart is empty.</p>
+  {% endif %}
+</div>
+
+<style>
+  .cart-container {
+    width: 400px;
+    margin: auto;
+    padding: 20px;
+  }
+
+  .cart-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .cart-table th,
+  .cart-table td {
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+  }
+
+  .cart-total {
+    margin-top: 15px;
+    font-size: 18px;
+  }
+
+  .checkout-btn {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: #2ecc71;
+    border: none;
+    color: white;
+    cursor: pointer;
+  }
+
+  .checkout-btn:hover {
+    background: #27ae60;
+  }
+</style>

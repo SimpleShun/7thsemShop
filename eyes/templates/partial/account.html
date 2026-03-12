@@ -1,11 +1,46 @@
 {% block header %}
-<h1>{% block title %}Log In{% endblock %}</h1>
+<h1>{% block title %}Account{% endblock %}</h1>
 {% endblock %}
+
 {% block content %}
 <div align="center">
-  UserName = {{ g.user['username']}}<br>
-  <button hx-get="/logout" hx-target="#output" hx-swap="innerHTML">
-    logout
+  <p>Username: {{ g.user['username'] }}</p>
+
+  <!-- Display number of cart items -->
+  <p>Cart Items: {{ session.get('cart')|length if session.get('cart') else 0 }}</p>
+
+  <!-- Logout button with HTMX -->
+  <button 
+    hx-get="/logout" 
+    hx-target="#output" 
+    hx-swap="innerHTML"
+    class="logout-btn">
+    Logout
   </button>
+
+  <!-- Change password button -->
+  <form hx-post="/change-password" style="margin-top: 10px;" hx-target="#change-pass-msg" hx-swap="innerHTML">
+    <input type="password" name="old_password" placeholder="Current Password" required><br><br>
+    <input type="password" name="new_password" placeholder="New Password" required><br><br>
+    <button type="submit" class="change-pass-btn">Change Password</button>
+  </form>
 </div>
+
+<div id="change-pass-msg" style="margin-top:10px;"></div>
+
+<h3>Purchased Images</h3>
+  {% if purchased_images %}
+    <ul style="list-style:none; padding-left:0;">
+      {% for image in purchased_images %}
+        <li style="margin-bottom:10px;">
+          {{ image.filename }}
+          <a href="{{ url_for('download_image', filename=image.filename) }}" download>
+            <button>Download</button>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>You have not purchased any images yet.</p>
+  {% endif %}
 {% endblock %}

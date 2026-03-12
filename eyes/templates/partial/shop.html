@@ -7,7 +7,12 @@
       <div class="product-info">
         <h3>{{ img }}</h3>
         <p>NRs 10</p>
-        <button>to Cart</button>
+        <button
+            hx-post="/add_to_cart"
+            hx-swap="none"
+            hx-vals='{"product":"{{ img }}"}'>
+            Add to Cart
+        </button>
       </div>
     </div>
     {% endfor %}

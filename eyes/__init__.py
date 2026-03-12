@@ -1,7 +1,7 @@
 import os , functools
 
 from flask import (
-    Flask, url_for, render_template, redirect, g , redirect , render_template , request , session , url_for
+    Flask,send_from_directory ,  flash,url_for, render_template, redirect, g , redirect , render_template , request , session , url_for
 )
 
 from werkzeug.security import check_password_hash , generate_password_hash
@@ -31,11 +31,69 @@ def create_app(test_config=None):
     def hello_world():
         return render_template('index.html')
 
+    @app.route("/add_to_cart", methods=["POST"])
+    def add_to_cart():
+        product = request.form.get("product")
+        if "cart" not in session:
+            session["cart"] = []
+        session["cart"].append({
+            "name": product,
+            "price": 10
+        })
+
+        session.modified = True
+
+        # cart_items = session["cart"]
+        # total = sum(item["price"] for item in cart_items)
+
+        return "",204
+
+        # return render_template(
+        #     "partial/cart.html",
+        #     cart_items=cart_items,
+        #     total=total
+        # )
+
+    @app.route("/cart-total", methods=["GET"])
+    @login_required
+    def cart_total():
+        cart = session.get("cart", [])
+        total = sum(item["price"] for item in cart)
+        return f"<strong>Total: Rs {total}</strong>"
+
+
+    @app.route("/remove-from-cart", methods=["POST"])
+    def remove_from_cart():
+        item_id = request.form.get("item_id")
+
+        # Example if cart is stored in session
+        cart = session.get("cart", [])
+
+        for i, item in enumerate(cart):
+             if item["name"] == item_id:
+                 cart.pop(i)   # remove only the first matching item
+                 break
+
+        session["cart"] = cart
+        total = sum(item["price"] for item in cart)
+        return ("",204)
+        # return render_template(
+        #     "partial/cart.html",
+        #     cart_items=cart,
+        #     total=total
+        # )
+        # return redirect("/cart")
+
     @login_required
     @app.route("/cart" , methods=["GET"])
     def cart():
-        return render_template("partial/cart.html")
-
+        cart_items = session["cart"]
+        total = sum(item["price"] for item in cart_items)
+        return render_template(
+            "partial/cart.html",
+            cart_items=cart_items,
+            total=total
+        )
 
     @app.route("/preview/<img>" , methods=["GET"])
     def preview(img):
@@ -58,7 +116,11 @@ def create_app(test_config=None):
             elif ( id == "login" ):
                 return render_template("partial/login.html")
             elif ( id == "account" ):
-                return render_template("partial/account.html")
+                db = get_db()
+                user_id = g.user['id']
+                cur = db.execute("SELECT filename FROM purchased_images WHERE user_id = ?", (user_id,))
+                purchased_images = cur.fetchall()
+                return render_template("partial/account.html" , purchased_images=purchased_images)
             return f"<h1>{id}</h1>"
         else:
             return redirect(url_for("hello_world"))
@@ -87,13 +149,74 @@ def create_app(test_config=None):
                     error = f"User {username} is already registered."
             else:
                 return render_template("partial/register.html")
-        return render_template('partial/login.html')
+        return render_template('index.html')
 
     @app.route("/logout")
     def logout():
         session.clear()
         return render_template("partial/login.html")
 
+    @app.route("/change-password", methods=["POST"])
+    @login_required
+    def change_password():
+        old_pass = request.form.get("old_password")
+        new_pass = request.form.get("new_password")
+        db = get_db()
+        user_id = g.user['id']
+
+        # Fetch current hashed password from SQLite
+        cur = db.execute("SELECT password FROM user WHERE id = ?", (user_id,))
+        row = cur.fetchone()
+        if not row or not row["password"]:
+            return "<p style='color:red'>No current password set.</p>"
+
+        stored_password = row["password"]
+
+        # Verify old password
+        if not check_password_hash(stored_password, old_pass):
+            return "<p style='color:red'>Current password is incorrect.</p>"
+
+        # Hash new password and update in DB
+        new_hashed = generate_password_hash(new_pass)
+        db.execute("UPDATE user SET password = ? WHERE id = ?", (new_hashed, user_id))
+        db.commit()
+        return "<p style='color:green'>Password changed successfully!</p>"
+        
+
+    @app.route("/download/<filename>")
+    @login_required
+    def download_image(filename):
+        uploads = os.path.join(app.root_path, "static/images")
+        return send_from_directory(uploads, filename, as_attachment=True)
+
+    @app.route("/checkout", methods=["POST"])
+    @login_required
+    def checkout():
+        cart_items = session.get("cart", [])
+        if not cart_items:
+            return redirect(url_for("index"))
+
+        db = get_db()
+        user_id = g.user['id']
+
+        # Move cart items to purchased_images table
+        for item in cart_items:
+            filename = item["name"]
+            # Check if this user already purchased this file
+            cur = db.execute(
+                "SELECT 1 FROM purchased_images WHERE user_id = ? AND filename = ?",
+                (user_id, filename)
+            )
+            if not cur.fetchone():  # Only insert if not already purchased
+                db.execute(
+                    "INSERT INTO purchased_images (user_id, filename) VALUES (?, ?)",
+                    (user_id, filename)
+                )
+        db.commit()
+
+        # Clear cart
+        session["cart"] = []
+        return "" ,204
 
     @app.route("/login" , methods=["GET","POST"])
     def login():
@@ -125,14 +248,6 @@ def create_app(test_config=None):
             g.user = get_db().execute(
                 'SELECT * FROM user WHERE id = ?', (user_id,)
             ).fetchone()
-    #
-    # def login_required(view):
-    #     @functools.wraps(view)
-    #     def wrapped_view(**kwargs):
-    #         if g.user is None:
-    #             return redirect(url_for('hello_world'))
-    #         return view(**kwargs)
-    #     return wrapped_view
 
     ###AUTH END
 

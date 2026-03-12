@@ -1,12 +1,12 @@
 <!doctype html>
-<title> {% block title %} {% endblock %} SimpleShun's Art Shop </title>
+<title> {% block title %} {% endblock %} Digital Art Shop </title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <script src="{{url_for('static',filename = "htmx.min.js")}}"></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
 
 <header>
-<h1>SimpleShun's Art Shop</h1>
+<h1>Digital Art Shop</h1>
 <nav>
    <a hx-trigger="click" id="shop" hx-get="shop" hx-target="#output" hx-swap="innerHTML">Shop</a>
    {% if g.user %}

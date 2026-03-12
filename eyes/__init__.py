@@ -3,11 +3,8 @@ from flask import (
     Flask, url_for, render_template, redirect
 )
 
-
 from flask_htmx import HTMX
-
 from eyes.auth import login_required
-
 
 def create_app(test_config=None):
     app = Flask(__name__,instance_relative_config=True)
